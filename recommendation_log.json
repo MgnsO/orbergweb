@@ -1,0 +1,22 @@
+[
+  {
+    "symbol": "BTCUSDT",
+    "date": "2025-05-25",
+    "recommendation": "neutral",
+    "price": 107246.53,
+    "explanation": "No GPT analysis (signal unchanged)",
+    "ema_short": 106362.89,
+    "ema_long": 102675.63,
+    "rsi": 57.9
+  },
+  {
+    "symbol": "ETHUSDT",
+    "date": "2025-05-25",
+    "recommendation": "neutral",
+    "price": 2514.69,
+    "explanation": "No GPT analysis (signal unchanged)",
+    "ema_short": 2501.98,
+    "ema_long": 2342.37,
+    "rsi": 50.01
+  }
+]

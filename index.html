@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>JSON Visualizer</title>
+</head>
+<body>
+  <h1>JSON Data</h1>
+  <pre id="json-output"></pre>
+
+  <script>
+    fetch('recommendation_log.json')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("json-output").textContent = JSON.stringify(data, null, 2);
+      })
+      .catch(error => {
+        document.getElementById("json-output").textContent = "Error loading JSON: " + error;
+      });
+  </script>
+</body>
+</html>
