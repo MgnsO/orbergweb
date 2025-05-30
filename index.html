@@ -2,20 +2,55 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>JSON Visualizer</title>
+  <title>Crypto Visualization</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h1>JSON Data</h1>
-  <pre id="json-output"></pre>
+  <h2>Pris per symbol</h2>
+  <canvas id="priceChart" width="800" height="400"></canvas>
 
   <script>
     fetch('recommendation_log.json')
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
-        document.getElementById("json-output").textContent = JSON.stringify(data, null, 2);
-      })
-      .catch(error => {
-        document.getElementById("json-output").textContent = "Error loading JSON: " + error;
+        const grouped = {};
+
+        data.forEach(entry => {
+          const sym = entry.symbol;
+          if (!grouped[sym]) grouped[sym] = { labels: [], prices: [] };
+          grouped[sym].labels.push(entry.date);
+          grouped[sym].prices.push(entry.price);
+        });
+
+        const datasets = Object.entries(grouped).map(([symbol, values]) => ({
+          label: symbol,
+          data: values.prices,
+          borderWidth: 2,
+          fill: false,
+          tension: 0.1
+        }));
+
+        const labels = grouped[Object.keys(grouped)[0]].labels;
+
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: datasets
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: {
+                title: { display: true, text: 'Datum' }
+              },
+              y: {
+                title: { display: true, text: 'Pris (USDT)' }
+              }
+            }
+          }
+        });
       });
   </script>
 </body>
