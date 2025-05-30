@@ -2,12 +2,12 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Crypto Visualization</title>
+  <title>Pris per symbol</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h2>Pris per symbol</h2>
-  <canvas id="priceChart" width="800" height="400"></canvas>
+  <h1>Pris per symbol</h1>
+  <div id="charts"></div>
 
   <script>
     fetch('recommendation_log.json')
@@ -17,39 +17,52 @@
 
         data.forEach(entry => {
           const sym = entry.symbol;
-          if (!grouped[sym]) grouped[sym] = { labels: [], prices: [] };
-          grouped[sym].labels.push(entry.date);
-          grouped[sym].prices.push(entry.price);
+          if (!grouped[sym]) grouped[sym] = [];
+          grouped[sym].push(entry);
         });
 
-        const datasets = Object.entries(grouped).map(([symbol, values]) => ({
-          label: symbol,
-          data: values.prices,
-          borderWidth: 2,
-          fill: false,
-          tension: 0.1
-        }));
+        const container = document.getElementById('charts');
 
-        const labels = grouped[Object.keys(grouped)[0]].labels;
+        Object.entries(grouped).forEach(([symbol, entries]) => {
+          // Sort entries by date
+          entries.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-        const ctx = document.getElementById('priceChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: datasets
-          },
-          options: {
-            responsive: true,
-            scales: {
-              x: {
-                title: { display: true, text: 'Datum' }
-              },
-              y: {
-                title: { display: true, text: 'Pris (USDT)' }
+          const labels = entries.map(e => e.date);
+          const prices = entries.map(e => e.price);
+
+          // Skapa canvas-element för varje symbol
+          const canvas = document.createElement('canvas');
+          canvas.width = 800;
+          canvas.height = 400;
+          container.appendChild(canvas);
+
+          // Skapa rubrik
+          const title = document.createElement('h3');
+          title.textContent = symbol;
+          container.insertBefore(title, canvas);
+
+          const ctx = canvas.getContext('2d');
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: 'Pris (USDT)',
+                data: prices,
+                borderWidth: 2,
+                borderColor: 'blue',
+                fill: false,
+                tension: 0.1
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                x: { title: { display: true, text: 'Datum' } },
+                y: { title: { display: true, text: 'Pris' } }
               }
             }
-          }
+          });
         });
       });
   </script>
